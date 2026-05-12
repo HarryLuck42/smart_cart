@@ -97,15 +97,10 @@ class OrderTrackingScreen extends ConsumerWidget {
         children: [
           _StatusHeader(order: order),
           const SizedBox(height: 16),
-          if (order.estimatedPreparationTime != null &&
-              !['ready', 'served'].contains(order.status)) ...[
-            _EtaCard(minutes: order.estimatedPreparationTime!),
-            const SizedBox(height: 16),
-          ],
           _StatusTimeline(currentStatus: order.status),
-          if (order.items?.isNotEmpty == true) ...[
+          if (order.items.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _OrderItemsCard(items: order.items!),
+            _OrderItemsCard(items: order.items, totalPrice: order.totalPrice),
           ],
           if (order.customerNote?.isNotEmpty == true) ...[
             const SizedBox(height: 16),
@@ -181,36 +176,6 @@ class _StatusHeader extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── ETA card ──────────────────────────────────────────────────────────────────
-
-class _EtaCard extends StatelessWidget {
-  final int minutes;
-
-  const _EtaCard({required this.minutes});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Card(
-      elevation: 0,
-      color: cs.secondaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: Icon(Icons.timer_outlined, color: cs.secondary),
-        title: Text(
-          'Estimated Wait',
-          style: TextStyle(
-              fontWeight: FontWeight.w600, color: cs.onSecondaryContainer),
-        ),
-        subtitle: Text(
-          'Ready in approximately $minutes minute${minutes == 1 ? '' : 's'}',
-          style: TextStyle(color: cs.onSecondaryContainer),
         ),
       ),
     );
@@ -360,8 +325,9 @@ class _StepRow extends StatelessWidget {
 
 class _OrderItemsCard extends StatelessWidget {
   final List<OrderDetailItem> items;
+  final double totalPrice;
 
-  const _OrderItemsCard({required this.items});
+  const _OrderItemsCard({required this.items, required this.totalPrice});
 
   @override
   Widget build(BuildContext context) {
@@ -380,46 +346,87 @@ class _OrderItemsCard extends StatelessWidget {
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            for (final item in items)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${item.quantity}×',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onPrimaryContainer,
-                        ),
+            for (final item in items) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${item.quantity}×',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        item.name ?? 'Item #${item.id}',
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.name, style: theme.textTheme.bodyMedium),
+                        if (item.customizations.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: item.customizations
+                                  .map(
+                                    (c) => Text(
+                                      '+ ${c.optionName}'
+                                      '${c.quantity > 1 ? ' ×${c.quantity}' : ''}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                      ],
                     ),
-                    if (item.unitPrice != null)
-                      Text(
-                        '\$${(item.unitPrice! * item.quantity).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '\$${item.subtotal.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
+            ],
+            const Divider(height: 8),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total',
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '\$${totalPrice.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
