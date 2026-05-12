@@ -38,10 +38,12 @@ class HomeScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.qr_code_scanner,
-                size: 96,
-                color: theme.colorScheme.primary,
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.qr_code_scanner,
+                  size: 96,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(height: 24),
               Text(

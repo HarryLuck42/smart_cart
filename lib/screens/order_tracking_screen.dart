@@ -80,7 +80,12 @@ class OrderTrackingScreen extends ConsumerWidget {
 
   Widget _buildBody(BuildContext context, WidgetRef ref, state) {
     if (state.isLoading && state.order == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Semantics(
+          label: 'Loading order status',
+          child: const CircularProgressIndicator(),
+        ),
+      );
     }
 
     if (state.error != null && state.order == null) {

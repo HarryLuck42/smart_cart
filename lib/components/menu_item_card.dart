@@ -20,14 +20,15 @@ class MenuItemCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (item.imageUrl != null) _NetworkImage(url: item.imageUrl!),
+          if (item.imageUrl != null)
+            _NetworkImage(url: item.imageUrl!, semanticLabel: item.name),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (item.imageUrl == null) ...[
-                  _PlaceholderImage(),
+                  ExcludeSemantics(child: _PlaceholderImage()),
                   const SizedBox(width: 12),
                 ],
                 Expanded(
@@ -73,24 +74,26 @@ class MenuItemCard extends ConsumerWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          FilledButton.tonal(
-                            onPressed: () =>
-                                CustomizationSheet.show(context, ref, item),
-                            style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 0),
-                              minimumSize: const Size(0, 34),
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.add, size: 16),
-                                SizedBox(width: 4),
-                                Text('Add',
-                                    style: TextStyle(fontSize: 13)),
-                              ],
+                          Semantics(
+                            label: 'Add ${item.name} to cart',
+                            button: true,
+                            child: FilledButton.tonal(
+                              onPressed: () =>
+                                  CustomizationSheet.show(context, ref, item),
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 0),
+                                minimumSize: const Size(48, 48),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.add, size: 16),
+                                  SizedBox(width: 4),
+                                  Text('Add',
+                                      style: TextStyle(fontSize: 13)),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -109,7 +112,8 @@ class MenuItemCard extends ConsumerWidget {
 
 class _NetworkImage extends StatelessWidget {
   final String url;
-  const _NetworkImage({required this.url});
+  final String semanticLabel;
+  const _NetworkImage({required this.url, required this.semanticLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +122,7 @@ class _NetworkImage extends StatelessWidget {
       height: 160,
       width: double.infinity,
       fit: BoxFit.cover,
+      semanticLabel: semanticLabel,
       errorBuilder: (_, _, _) => const SizedBox.shrink(),
     );
   }

@@ -70,6 +70,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           ValueListenableBuilder(
             valueListenable: _controller,
             builder: (_, state, _) => IconButton(
+              tooltip: state.torchState == TorchState.on
+                  ? 'Turn off flash'
+                  : 'Turn on flash',
               icon: Icon(
                 state.torchState == TorchState.on
                     ? Icons.flash_on
@@ -81,6 +84,9 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           ValueListenableBuilder(
             valueListenable: _controller,
             builder: (_, state, _) => IconButton(
+              tooltip: state.cameraDirection == CameraFacing.front
+                  ? 'Switch to rear camera'
+                  : 'Switch to front camera',
               icon: Icon(
                 state.cameraDirection == CameraFacing.front
                     ? Icons.camera_front

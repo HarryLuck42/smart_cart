@@ -180,14 +180,22 @@ class _CartItemTile extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            GestureDetector(
-              onTap: onRemove,
-              child: Icon(Icons.close, size: 18, color: Colors.grey.shade500),
+            Semantics(
+              label: 'Remove ${cartItem.item.name}',
+              button: true,
+              child: GestureDetector(
+                onTap: onRemove,
+                child: Icon(Icons.close, size: 18, color: Colors.grey.shade500),
+              ),
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                _QtyButton(icon: Icons.remove, onTap: onDecrement),
+                _QtyButton(
+                  icon: Icons.remove,
+                  onTap: onDecrement,
+                  semanticLabel: 'Decrease quantity of ${cartItem.item.name}',
+                ),
                 SizedBox(
                   width: 36,
                   child: Text(
@@ -196,7 +204,11 @@ class _CartItemTile extends StatelessWidget {
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
-                _QtyButton(icon: Icons.add, onTap: onIncrement),
+                _QtyButton(
+                  icon: Icons.add,
+                  onTap: onIncrement,
+                  semanticLabel: 'Increase quantity of ${cartItem.item.name}',
+                ),
               ],
             ),
             const SizedBox(height: 6),
@@ -218,22 +230,31 @@ class _CartItemTile extends StatelessWidget {
 class _QtyButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final String semanticLabel;
 
-  const _QtyButton({required this.icon, required this.onTap});
+  const _QtyButton({
+    required this.icon,
+    required this.onTap,
+    required this.semanticLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 30,
-        height: 30,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(6),
+    return Semantics(
+      label: semanticLabel,
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 30,
+          height: 30,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(icon, size: 16),
         ),
-        child: Icon(icon, size: 16),
       ),
     );
   }
@@ -307,11 +328,14 @@ class _CartSummary extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: isSubmitting
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2.5, color: Colors.white),
+                    ? Semantics(
+                        label: 'Placing order',
+                        child: const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2.5, color: Colors.white),
+                        ),
                       )
                     : const Text('Place Order',
                         style: TextStyle(fontSize: 16)),

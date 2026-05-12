@@ -244,6 +244,7 @@ class _MenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
+          tooltip: cartCount > 0 ? 'Cart, $cartCount items' : 'Cart',
           icon: Badge.count(
             count: cartCount,
             isLabelVisible: cartCount > 0,
