@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/dio_client.dart';
 import '../api/menu_api_service.dart';
@@ -25,8 +26,12 @@ final orderCacheProvider =
 
 // ── Network ───────────────────────────────────────────────────────────────────
 
+final dioProvider = Provider<Dio>(
+  (_) => DioClient.create(),
+);
+
 final menuApiServiceProvider = Provider<MenuApiService>(
-  (_) => MenuApiService(DioClient.create()),
+  (ref) => MenuApiService(ref.read(dioProvider)),
 );
 
 // ── Repository ────────────────────────────────────────────────────────────────
@@ -71,7 +76,7 @@ final cartSubtotalProvider = Provider<double>(
 // ── Order ─────────────────────────────────────────────────────────────────────
 
 final orderApiServiceProvider = Provider<OrderApiService>(
-  (_) => OrderApiService(DioClient.create()),
+  (ref) => OrderApiService(ref.read(dioProvider)),
 );
 
 final orderRepositoryProvider = Provider<OrderRepository>(
