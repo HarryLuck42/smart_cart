@@ -257,8 +257,9 @@ class _CartSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final navBarHeight = MediaQuery.viewPaddingOf(context).bottom;
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, navBarHeight),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         boxShadow: [
@@ -269,9 +270,7 @@ class _CartSummary extends StatelessWidget {
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Column(
+      child: Column(
           children: [
             TextField(
               controller: noteController,
@@ -321,7 +320,6 @@ class _CartSummary extends StatelessWidget {
             const SizedBox(height: 8),
           ],
         ),
-      ),
     );
   }
 }
