@@ -201,7 +201,7 @@ class _CustomizationSheetState extends ConsumerState<CustomizationSheet> {
                 ),
                 child: Text(
                   'Add to Cart  ·  \$${_totalPrice.toStringAsFixed(2)}',
-                  style: theme.textTheme.bodyLarge,
+                  style: theme.textTheme.bodyLarge?.copyWith(color: _canConfirm ? Colors.white : Colors.black),
                 ),
               ),
             ),
