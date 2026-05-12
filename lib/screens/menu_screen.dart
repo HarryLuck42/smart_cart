@@ -14,16 +14,14 @@ class MenuScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(menuViewModelProvider(tableId));
 
-    // Show loading while either request is in-flight.
-    if (state.data.isLoading || state.categories.isLoading) {
+    if (state.data.isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text('Table $tableId')),
         body: const _LoadingView(),
       );
     }
 
-    // Surface the first error encountered.
-    final error = state.data.error ?? state.categories.error;
+    final error = state.data.error;
     if (error != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Menu')),
@@ -236,7 +234,7 @@ class _MenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           Text(
-            'Table ${restaurant.tableId}',
+            'Table $tableId',
             style: TextStyle(
               fontSize: 12,
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),

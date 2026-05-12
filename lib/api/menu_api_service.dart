@@ -8,9 +8,6 @@ part 'menu_api_service.g.dart';
 abstract class MenuApiService {
   factory MenuApiService(Dio dio) = _MenuApiService;
 
-  @GET('/api/v1/categories')
-  Future<CategoriesResponse> getCategories();
-
   @GET('/api/v1/menu')
   Future<MenuResponse> getMenu(@Query('table_id') String tableId);
 }

@@ -11,16 +11,14 @@ void main() {
   setUp(() {
     mockRepo = MockMenuRepository();
     when(mockRepo.getMenu('T001')).thenAnswer((_) async => makeMenuResponse());
-    when(mockRepo.getCategories()).thenAnswer((_) async => [kTestCategoryA]);
   });
 
   group('MenuViewModel', () {
-    test('fetchMenu sets data and categories to AsyncData on success', () async {
+    test('fetchMenu sets data to AsyncData on success', () async {
       final vm = MenuViewModel(mockRepo, 'T001');
       await vm.fetchMenu();
 
       expect(vm.state.data, isA<AsyncData>());
-      expect(vm.state.categories, isA<AsyncData>());
     });
 
     test('fetchMenu sets data to AsyncError when menu fetch fails', () async {
@@ -30,16 +28,6 @@ void main() {
       await vm.fetchMenu();
 
       expect(vm.state.data, isA<AsyncError>());
-    });
-
-    test('fetchMenu sets categories to AsyncError when categories fetch fails',
-        () async {
-      when(mockRepo.getCategories()).thenThrow(Exception('Network error'));
-
-      final vm = MenuViewModel(mockRepo, 'T001');
-      await vm.fetchMenu();
-
-      expect(vm.state.categories, isA<AsyncError>());
     });
 
     test('setSearchQuery updates searchQuery in state', () {

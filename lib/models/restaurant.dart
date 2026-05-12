@@ -6,13 +6,8 @@ part 'restaurant.g.dart';
 class Restaurant {
   final String id;
   final String name;
-  final String tableId;
 
-  const Restaurant({
-    required this.id,
-    required this.name,
-    required this.tableId,
-  });
+  const Restaurant({required this.id, required this.name});
 
   factory Restaurant.fromJson(Map<String, dynamic> json) =>
       _$RestaurantFromJson(json);

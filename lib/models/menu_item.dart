@@ -9,6 +9,7 @@ class MenuItem {
   final String name;
   final String description;
   final double price;
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final int categoryId;
   final String? imageUrl;
   final List<CustomizationGroup> customizationGroups;
@@ -18,7 +19,7 @@ class MenuItem {
     required this.name,
     required this.description,
     required this.price,
-    required this.categoryId,
+    this.categoryId = 0,
     this.imageUrl,
     required this.customizationGroups,
   });
@@ -27,4 +28,14 @@ class MenuItem {
       _$MenuItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$MenuItemToJson(this);
+
+  MenuItem copyWith({int? categoryId}) => MenuItem(
+        id: id,
+        name: name,
+        description: description,
+        price: price,
+        categoryId: categoryId ?? this.categoryId,
+        imageUrl: imageUrl,
+        customizationGroups: customizationGroups,
+      );
 }

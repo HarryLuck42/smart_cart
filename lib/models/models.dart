@@ -1,5 +1,4 @@
 export 'cart_item.dart';
-export 'categories_response.dart';
 export 'category.dart';
 export 'customization_group.dart';
 export 'customization_option.dart';

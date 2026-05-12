@@ -20,7 +20,7 @@ const kTestMenuItemB = MenuItem(
   name: 'Mie Goreng',
   description: 'Fried noodle with vegetables',
   price: 10.00,
-  categoryId: 10,
+  categoryId: 20,
   customizationGroups: [],
 );
 
@@ -30,21 +30,27 @@ const kTestOption = CustomizationOption(
   priceModifier: 1.50,
 );
 
-const kTestCategoryA = Category(id: 10, name: 'Rice', sortOrder: 2);
-const kTestCategoryB = Category(id: 20, name: 'Appetizers', sortOrder: 1);
+const kTestCategoryA = Category(
+  id: 10,
+  name: 'Rice',
+  sortOrder: 2,
+  items: [kTestMenuItem],
+);
+const kTestCategoryB = Category(
+  id: 20,
+  name: 'Appetizers',
+  sortOrder: 1,
+  items: [kTestMenuItemB],
+);
 
 MenuResponse makeMenuResponse({
-  List<MenuItem>? items,
   List<Category>? categories,
+  String tableId = 'T001',
 }) =>
     MenuResponse(
-      restaurant: const Restaurant(
-        id: 'R1',
-        name: 'Test Restaurant',
-        tableId: 'T001',
-      ),
+      tableId: tableId,
+      restaurant: const Restaurant(id: 'R1', name: 'Test Restaurant'),
       categories: categories ?? const [kTestCategoryA],
-      items: items ?? const [kTestMenuItem],
     );
 
 OrderDetail makeOrderDetail({

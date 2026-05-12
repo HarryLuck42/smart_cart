@@ -6,13 +6,12 @@
 import 'dart:async' as _i5;
 
 import 'package:cart_app/api/menu_repository.dart' as _i4;
-import 'package:cart_app/api/order_repository.dart' as _i7;
-import 'package:cart_app/models/cart_item.dart' as _i8;
-import 'package:cart_app/models/category.dart' as _i6;
+import 'package:cart_app/api/order_repository.dart' as _i6;
+import 'package:cart_app/models/cart_item.dart' as _i7;
 import 'package:cart_app/models/menu_response.dart' as _i2;
 import 'package:cart_app/models/order_detail.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i9;
+import 'package:mockito/src/dummies.dart' as _i8;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -48,14 +47,6 @@ class MockMenuRepository extends _i1.Mock implements _i4.MenuRepository {
   }
 
   @override
-  _i5.Future<List<_i6.Category>> getCategories() =>
-      (super.noSuchMethod(
-            Invocation.method(#getCategories, []),
-            returnValue: _i5.Future<List<_i6.Category>>.value(<_i6.Category>[]),
-          )
-          as _i5.Future<List<_i6.Category>>);
-
-  @override
   _i5.Future<_i2.MenuResponse> getMenu(String? tableId) =>
       (super.noSuchMethod(
             Invocation.method(#getMenu, [tableId]),
@@ -69,7 +60,7 @@ class MockMenuRepository extends _i1.Mock implements _i4.MenuRepository {
 /// A class which mocks [OrderRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockOrderRepository extends _i1.Mock implements _i7.OrderRepository {
+class MockOrderRepository extends _i1.Mock implements _i6.OrderRepository {
   MockOrderRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -77,7 +68,7 @@ class MockOrderRepository extends _i1.Mock implements _i7.OrderRepository {
   @override
   _i5.Future<String> submitOrder({
     required String? tableId,
-    required List<_i8.CartItem>? items,
+    required List<_i7.CartItem>? items,
     required String? customerNote,
   }) =>
       (super.noSuchMethod(
@@ -87,7 +78,7 @@ class MockOrderRepository extends _i1.Mock implements _i7.OrderRepository {
               #customerNote: customerNote,
             }),
             returnValue: _i5.Future<String>.value(
-              _i9.dummyValue<String>(
+              _i8.dummyValue<String>(
                 this,
                 Invocation.method(#submitOrder, [], {
                   #tableId: tableId,

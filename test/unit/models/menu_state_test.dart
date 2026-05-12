@@ -7,10 +7,8 @@ void main() {
   group('MenuState', () {
     MenuState filled() => MenuState(
           data: AsyncData(makeMenuResponse(
-            items: [kTestMenuItem, kTestMenuItemB],
             categories: [kTestCategoryA, kTestCategoryB],
           )),
-          categories: const AsyncData([kTestCategoryA, kTestCategoryB]),
         );
 
     group('sortedCategories', () {
@@ -26,7 +24,7 @@ void main() {
     });
 
     group('allItems', () {
-      test('returns every item from menu data', () {
+      test('returns every item from all categories', () {
         expect(filled().allItems.length, 2);
       });
 
@@ -36,10 +34,10 @@ void main() {
     });
 
     group('itemsForCategory', () {
-      test('filters items by categoryId', () {
+      test('returns items belonging to the given category', () {
         final items = filled().itemsForCategory(10);
-        expect(items.length, 2);
-        expect(items.every((i) => i.categoryId == 10), isTrue);
+        expect(items.length, 1);
+        expect(items.first.categoryId, 10);
       });
 
       test('returns empty for unknown categoryId', () {

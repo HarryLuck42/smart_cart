@@ -11,19 +11,9 @@ class MenuViewModel extends StateNotifier<MenuState> {
   }
 
   Future<void> fetchMenu() async {
+    state = state.copyWith(data: const AsyncLoading());
     state = state.copyWith(
-      data: const AsyncLoading(),
-      categories: const AsyncLoading(),
-    );
-
-    final (menuResult, categoriesResult) = await (
-      AsyncValue.guard(() => _repository.getMenu(_tableId)),
-      AsyncValue.guard(() => _repository.getCategories()),
-    ).wait;
-
-    state = state.copyWith(
-      data: menuResult,
-      categories: categoriesResult,
+      data: await AsyncValue.guard(() => _repository.getMenu(_tableId)),
     );
   }
 
