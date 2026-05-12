@@ -36,7 +36,10 @@ class MenuScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: _MenuAppBar(restaurant: state.data.asData!.value.restaurant),
+      appBar: _MenuAppBar(
+        restaurant: state.data.asData!.value.restaurant,
+        tableId: tableId,
+      ),
       body: _MenuView(tableId: tableId),
     );
   }
@@ -211,7 +214,9 @@ class _SearchResultsView extends StatelessWidget {
 class _MenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Restaurant restaurant;
 
-  const _MenuAppBar({required this.restaurant});
+  final String tableId;
+
+  const _MenuAppBar({required this.restaurant, required this.tableId});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -246,7 +251,7 @@ class _MenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
             isLabelVisible: cartCount > 0,
             child: const Icon(Icons.shopping_cart_outlined),
           ),
-          onPressed: () => context.push('/cart'),
+          onPressed: () => context.push('/cart?tableId=$tableId'),
         ),
       ],
     );

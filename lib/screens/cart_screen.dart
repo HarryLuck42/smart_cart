@@ -1,16 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../models/cart_item.dart';
+import '../state/order/order_state.dart';
 import '../state/providers.dart';
 
-class CartScreen extends ConsumerWidget {
-  const CartScreen({super.key});
+class CartScreen extends ConsumerStatefulWidget {
+  final String tableId;
+
+  const CartScreen({super.key, required this.tableId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends ConsumerState<CartScreen> {
+  final _noteController = TextEditingController();
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cart = ref.watch(cartViewModelProvider);
-    final vm = ref.read(cartViewModelProvider.notifier);
+    final cartVm = ref.read(cartViewModelProvider.notifier);
+    final orderState = ref.watch(orderViewModelProvider);
+
+    ref.listen<OrderState>(orderViewModelProvider, (_, next) {
+      if (next.isSuccess) {
+        _showConfirmation(next.orderId!);
+      } else if (next.isError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.errorMessage!),
+            backgroundColor: theme.colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        ref.read(orderViewModelProvider.notifier).reset();
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -20,7 +53,7 @@ class CartScreen extends ConsumerWidget {
         actions: [
           if (cart.items.isNotEmpty)
             TextButton(
-              onPressed: () => _confirmClear(context, ref),
+              onPressed: () => _confirmClear(context),
               child: Text(
                 'Clear all',
                 style: TextStyle(color: theme.colorScheme.error),
@@ -39,19 +72,30 @@ class CartScreen extends ConsumerWidget {
                     separatorBuilder: (_, _) => const Divider(height: 32),
                     itemBuilder: (_, i) => _CartItemTile(
                       cartItem: cart.items[i],
-                      onIncrement: () => vm.increment(i),
-                      onDecrement: () => vm.decrement(i),
-                      onRemove: () => vm.remove(i),
+                      onIncrement: () => cartVm.increment(i),
+                      onDecrement: () => cartVm.decrement(i),
+                      onRemove: () => cartVm.remove(i),
                     ),
                   ),
                 ),
-                _CartSummary(subtotal: cart.subtotal),
+                _CartSummary(
+                  subtotal: cart.subtotal,
+                  noteController: _noteController,
+                  isSubmitting: orderState.isSubmitting,
+                  onPlaceOrder: () => ref
+                      .read(orderViewModelProvider.notifier)
+                      .submitOrder(
+                        tableId: widget.tableId,
+                        items: cart.items,
+                        customerNote: _noteController.text.trim(),
+                      ),
+                ),
               ],
             ),
     );
   }
 
-  void _confirmClear(BuildContext context, WidgetRef ref) {
+  void _confirmClear(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -72,6 +116,56 @@ class CartScreen extends ConsumerWidget {
               style: TextStyle(
                   color: Theme.of(dialogContext).colorScheme.error),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showConfirmation(String orderId) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        icon: const Icon(Icons.check_circle_rounded,
+            color: Colors.green, size: 56),
+        title: const Text('Order Placed!'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Your order has been received.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'Order #$orderId',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              ref.read(orderViewModelProvider.notifier).reset();
+              ref.read(cartViewModelProvider.notifier).clear();
+              context.go('/');
+            },
+            child: const Text('Done'),
           ),
         ],
       ),
@@ -193,14 +287,22 @@ class _QtyButton extends StatelessWidget {
 
 class _CartSummary extends StatelessWidget {
   final double subtotal;
+  final TextEditingController noteController;
+  final bool isSubmitting;
+  final VoidCallback onPlaceOrder;
 
-  const _CartSummary({required this.subtotal});
+  const _CartSummary({
+    required this.subtotal,
+    required this.noteController,
+    required this.isSubmitting,
+    required this.onPlaceOrder,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         boxShadow: [
@@ -215,6 +317,21 @@ class _CartSummary extends StatelessWidget {
         top: false,
         child: Column(
           children: [
+            TextField(
+              controller: noteController,
+              decoration: InputDecoration(
+                labelText: 'Note to kitchen (optional)',
+                hintText: 'e.g. No MSG, extra spicy…',
+                prefixIcon: const Icon(Icons.sticky_note_2_outlined),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
+              ),
+              maxLines: 2,
+              textInputAction: TextInputAction.done,
+            ),
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -226,23 +343,26 @@ class _CartSummary extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Order placed! Thank you!'),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                ),
+                onPressed: isSubmitting ? null : onPlaceOrder,
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('Place Order',
-                    style: TextStyle(fontSize: 16)),
+                child: isSubmitting
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5, color: Colors.white),
+                      )
+                    : const Text('Place Order',
+                        style: TextStyle(fontSize: 16)),
               ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
       ),

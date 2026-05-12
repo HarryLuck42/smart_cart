@@ -23,7 +23,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/cart',
-      builder: (context, state) => const CartScreen(),
+      builder: (context, state) => CartScreen(
+        tableId: state.uri.queryParameters['tableId'] ?? '',
+      ),
     ),
   ],
 );
