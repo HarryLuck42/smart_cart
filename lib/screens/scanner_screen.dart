@@ -22,6 +22,17 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // ModalRoute notifies dependents when isCurrent changes (e.g. on pop),
+    // so this resets the scan lock if the screen ever reappears on the stack.
+    if (ModalRoute.of(context)?.isCurrent == true && _hasScanned) {
+      _hasScanned = false;
+      _controller.start();
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
