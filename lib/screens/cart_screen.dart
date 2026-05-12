@@ -33,6 +33,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     ref.listen<OrderState>(orderViewModelProvider, (_, next) {
       if (next.isSuccess) {
         final orderId = next.orderId!;
+        ref.read(orderCacheProvider.notifier).save(orderId);
         ref.read(cartViewModelProvider.notifier).clear();
         ref.read(orderViewModelProvider.notifier).reset();
         context.push('/order/$orderId');

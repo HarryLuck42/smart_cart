@@ -4,6 +4,7 @@ import '../api/menu_api_service.dart';
 import '../api/menu_repository.dart';
 import '../api/order_api_service.dart';
 import '../api/order_repository.dart';
+import '../services/order_cache.dart';
 import 'scanner/scanner_state.dart';
 import 'scanner/scanner_view_model.dart';
 import 'menu/menu_state.dart';
@@ -14,6 +15,13 @@ import 'order/order_state.dart';
 import 'order/order_view_model.dart';
 import 'order_tracking/order_tracking_state.dart';
 import 'order_tracking/order_tracking_view_model.dart';
+
+// ── Order cache ───────────────────────────────────────────────────────────────
+
+final orderCacheProvider =
+    StateNotifierProvider<OrderCacheNotifier, String?>(
+  (_) => OrderCacheNotifier(),
+);
 
 // ── Network ───────────────────────────────────────────────────────────────────
 

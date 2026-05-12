@@ -58,6 +58,12 @@ class OrderTrackingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(orderTrackingViewModelProvider(orderId));
 
+    ref.listen(orderTrackingViewModelProvider(orderId), (_, next) {
+      if (next.order?.status == 'served') {
+        ref.read(orderCacheProvider.notifier).clear();
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
