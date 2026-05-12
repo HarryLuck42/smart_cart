@@ -164,7 +164,9 @@ class _CustomizationSheetState extends ConsumerState<CustomizationSheet> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            padding: EdgeInsets.fromLTRB(
+              16, 12, 16, 16 + MediaQuery.viewPaddingOf(context).bottom,
+            ),
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               boxShadow: [
