@@ -4,9 +4,9 @@ import '../models/models.dart';
 
 part 'menu_api_service.g.dart';
 
-@RestApi(baseUrl: 'https://foodorderapi-production-1555.up.railway.app')
+@RestApi()
 abstract class MenuApiService {
-  factory MenuApiService(Dio dio, {String baseUrl}) = _MenuApiService;
+  factory MenuApiService(Dio dio) = _MenuApiService;
 
   @GET('/api/v1/categories')
   Future<CategoriesResponse> getCategories();
