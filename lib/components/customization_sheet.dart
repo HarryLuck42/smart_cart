@@ -102,14 +102,16 @@ class _CustomizationSheetState extends ConsumerState<CustomizationSheet> {
       expand: false,
       builder: (context, scrollController) => Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
+          ExcludeSemantics(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
           ),
@@ -197,7 +199,7 @@ class _CustomizationSheetState extends ConsumerState<CustomizationSheet> {
                 ),
                 child: Text(
                   'Add to Cart  ·  \$${_totalPrice.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 16),
+                  style: theme.textTheme.bodyLarge,
                 ),
               ),
             ),
@@ -247,8 +249,7 @@ class _GroupSection extends StatelessWidget {
                   ),
                   child: Text(
                     'Required',
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       color: Colors.red.shade700,
                       fontWeight: FontWeight.w600,
                     ),
@@ -257,7 +258,7 @@ class _GroupSection extends StatelessWidget {
               else
                 Text(
                   'Optional',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
                 ),
             ],
           ),
@@ -266,7 +267,7 @@ class _GroupSection extends StatelessWidget {
               padding: const EdgeInsets.only(top: 2),
               child: Text(
                 'Choose up to ${group.maxSelections}',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
               ),
             ),
           const SizedBox(height: 8),
@@ -311,48 +312,60 @@ class _OptionTile extends StatelessWidget {
     final activeColor = theme.colorScheme.primary;
     final dimColor = Colors.grey.shade400;
 
-    return InkWell(
-      onTap: isDisabled ? null : onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          children: [
-            Icon(
-              isSingleSelect
-                  ? (isSelected
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked)
-                  : (isSelected
-                      ? Icons.check_box
-                      : Icons.check_box_outline_blank),
-              color: isSelected ? activeColor : dimColor,
-              size: 22,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                option.name,
-                style: TextStyle(
-                  color: isDisabled ? dimColor : Colors.black87,
+    final priceLabel = option.priceModifier > 0
+        ? '+\$${option.priceModifier.toStringAsFixed(2)}'
+        : 'free';
+    final semanticLabel =
+        '${option.name}, $priceLabel${isSelected ? ', selected' : ''}${isDisabled ? ', unavailable' : ''}';
+
+    return Semantics(
+      label: semanticLabel,
+      checked: isSelected,
+      enabled: !isDisabled,
+      button: true,
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: isDisabled ? null : onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                isSingleSelect
+                    ? (isSelected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked)
+                    : (isSelected
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank),
+                color: isSelected ? activeColor : dimColor,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  option.name,
+                  style: TextStyle(
+                    color: isDisabled ? dimColor : Colors.black87,
+                  ),
                 ),
               ),
-            ),
-            if (option.priceModifier > 0)
-              Text(
-                '+\$${option.priceModifier.toStringAsFixed(2)}',
-                style: TextStyle(
-                  color: isDisabled ? dimColor : activeColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
+              if (option.priceModifier > 0)
+                Text(
+                  '+\$${option.priceModifier.toStringAsFixed(2)}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDisabled ? dimColor : activeColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              else
+                Text(
+                  'Free',
+                  style: theme.textTheme.bodySmall?.copyWith(color: dimColor),
                 ),
-              )
-            else
-              Text(
-                'Free',
-                style: TextStyle(color: dimColor, fontSize: 12),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

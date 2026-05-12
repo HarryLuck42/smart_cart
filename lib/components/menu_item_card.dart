@@ -90,8 +90,7 @@ class MenuItemCard extends ConsumerWidget {
                                 children: [
                                   Icon(Icons.add, size: 16),
                                   SizedBox(width: 4),
-                                  Text('Add',
-                                      style: TextStyle(fontSize: 13)),
+                                  Text('Add'),
                                 ],
                               ),
                             ),
@@ -159,11 +158,10 @@ class _CategoryLabel extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-          ),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
         ),
       ),
     );
@@ -190,8 +188,10 @@ class _CustomizationBadge extends StatelessWidget {
       ),
       child: Text(
         isRequired ? '$label *' : label,
-        style:
-            TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w500),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
       ),
     );
   }

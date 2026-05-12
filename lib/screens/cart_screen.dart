@@ -171,7 +171,7 @@ class _CartItemTile extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 '\$${cartItem.unitPrice.toStringAsFixed(2)} each',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
               ),
             ],
           ),
@@ -214,10 +214,9 @@ class _CartItemTile extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               '\$${cartItem.totalPrice.toStringAsFixed(2)}',
-              style: TextStyle(
+              style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
-                fontSize: 15,
               ),
             ),
           ],
@@ -337,8 +336,7 @@ class _CartSummary extends StatelessWidget {
                               strokeWidth: 2.5, color: Colors.white),
                         ),
                       )
-                    : const Text('Place Order',
-                        style: TextStyle(fontSize: 16)),
+                    : const Text('Place Order'),
               ),
             ),
             const SizedBox(height: 8),

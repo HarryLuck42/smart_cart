@@ -60,7 +60,7 @@ class HomeScreen extends ConsumerWidget {
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 28, vertical: 16),
-                  textStyle: const TextStyle(fontSize: 16),
+                  textStyle: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
               if (lastOrderId != null) ...[

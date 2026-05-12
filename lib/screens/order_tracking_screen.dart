@@ -131,7 +131,7 @@ class OrderTrackingScreen extends ConsumerWidget {
               child: Text(
                 'Could not refresh — pull down to retry.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade500),
               ),
             ),
         ],
@@ -288,47 +288,53 @@ class _StepRow extends StatelessWidget {
           : Colors.grey.shade500,
     );
 
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Dot + connecting line
-          SizedBox(
-            width: 40,
-            child: Column(
-              children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: dotColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: dotBorderColor, width: 2),
-                  ),
-                  child: Icon(
-                    isDone ? Icons.check_rounded : icon,
-                    size: 18,
-                    color: dotIconColor,
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Center(
-                      child: Container(width: 2, color: lineColor),
+    final stateLabel = isDone ? 'completed' : isCurrent ? 'current step' : 'pending';
+
+    return Semantics(
+      label: '$label: $stateLabel',
+      excludeSemantics: true,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Dot + connecting line
+            SizedBox(
+              width: 40,
+              child: Column(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: dotColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: dotBorderColor, width: 2),
+                    ),
+                    child: Icon(
+                      isDone ? Icons.check_rounded : icon,
+                      size: 18,
+                      color: dotIconColor,
                     ),
                   ),
-              ],
+                  if (!isLast)
+                    Expanded(
+                      child: Center(
+                        child: Container(width: 2, color: lineColor),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          // Label
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 12 : 24, top: 6),
-              child: Text(label, style: labelStyle),
+            const SizedBox(width: 12),
+            // Label
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: isLast ? 12 : 24, top: 6),
+                child: Text(label, style: labelStyle),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -363,20 +369,21 @@ class _OrderItemsCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${item.quantity}×',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onPrimaryContainer,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '${item.quantity}×',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
                   ),
@@ -396,8 +403,7 @@ class _OrderItemsCard extends StatelessWidget {
                                     (c) => Text(
                                       '+ ${c.optionName}'
                                       '${c.quantity > 1 ? ' ×${c.quantity}' : ''}',
-                                      style: TextStyle(
-                                        fontSize: 12,
+                                      style: theme.textTheme.bodySmall?.copyWith(
                                         color: Colors.grey.shade600,
                                       ),
                                     ),
@@ -432,9 +438,8 @@ class _OrderItemsCard extends StatelessWidget {
                 ),
                 Text(
                   '\$${totalPrice.toStringAsFixed(2)}',
-                  style: TextStyle(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
                     color: theme.colorScheme.primary,
                   ),
                 ),
@@ -484,7 +489,7 @@ class _BackToMenuButton extends StatelessWidget {
       child: isServed
           ? FilledButton.icon(
               icon: const Icon(Icons.home_rounded),
-              label: const Text('Back to Home', style: TextStyle(fontSize: 15)),
+              label: const Text('Back to Home'),
               onPressed: () => context.go('/'),
               style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14)),
@@ -492,7 +497,7 @@ class _BackToMenuButton extends StatelessWidget {
           : OutlinedButton.icon(
               icon: const Icon(Icons.arrow_back_rounded),
               label:
-                  const Text('Back to Menu', style: TextStyle(fontSize: 15)),
+                  const Text('Back to Menu'),
               onPressed: () => context.go('/'),
               style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14)),
@@ -525,7 +530,7 @@ class _ErrorView extends StatelessWidget {
             Text(
               error,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(

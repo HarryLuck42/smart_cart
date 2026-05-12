@@ -173,9 +173,11 @@ class _ScanOverlay extends StatelessWidget {
             color: Colors.black54,
             alignment: Alignment.topCenter,
             padding: const EdgeInsets.only(top: 16),
-            child: const Text(
+            child: Text(
               'Align the table QR code within the frame',
-              style: TextStyle(color: Colors.white, fontSize: 14),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                  ),
             ),
           ),
         ),

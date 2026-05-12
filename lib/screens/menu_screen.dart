@@ -231,12 +231,11 @@ class _MenuAppBar extends ConsumerWidget implements PreferredSizeWidget {
         children: [
           Text(
             restaurant.name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             'Table $tableId',
-            style: TextStyle(
-              fontSize: 12,
+            style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
@@ -300,7 +299,7 @@ class _ErrorView extends StatelessWidget {
             Text(
               error,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
