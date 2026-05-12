@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import '../models/cart_item.dart';
 import '../models/order_detail.dart';
 import '../models/order_request.dart';
+import 'api_exception.dart';
 import 'order_api_service.dart';
 
 class OrderRepository {
@@ -29,20 +31,35 @@ class OrderRepository {
           .toList(),
     );
 
-    final response = await _apiService.submitOrder(request.toJson());
-
-    if (!response.success || response.data == null) {
-      throw Exception(response.message ?? 'Order submission failed');
+    try {
+      final response = await _apiService.submitOrder(request.toJson());
+      if (!response.success || response.data == null) {
+        throw const ApiException(
+            code: 'API_ERROR', message: 'Order submission failed.');
+      }
+      return '${response.data!.id}';
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      throw _unwrap(e);
     }
-
-    return '${response.data!.id}';
   }
 
   Future<OrderDetail> getOrder(String orderId) async {
-    final response = await _apiService.getOrder(orderId);
-    if (!response.success || response.data == null) {
-      throw Exception(response.message ?? 'Failed to fetch order');
+    try {
+      final response = await _apiService.getOrder(orderId);
+      if (!response.success || response.data == null) {
+        throw const ApiException(
+            code: 'API_ERROR', message: 'Failed to fetch order.');
+      }
+      return response.data!;
+    } on ApiException {
+      rethrow;
+    } on DioException catch (e) {
+      throw _unwrap(e);
     }
-    return response.data!;
   }
 }
+
+ApiException _unwrap(DioException e) =>
+    e.error is ApiException ? e.error as ApiException : ApiException.fromDio(e);
