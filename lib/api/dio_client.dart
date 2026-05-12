@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
+import '../debug/talker_logger.dart';
 import 'api_exception.dart';
 
 class DioClient {
@@ -16,6 +17,10 @@ class DioClient {
         },
       ),
     );
+
+    if (kDebugMode) {
+      dio.interceptors.add(dioLogger);
+    }
 
     // ── API error interceptor ─────────────────────────────────────────────────
     // onResponse: converts {"success": false} 2xx responses to DioException so
@@ -66,19 +71,6 @@ class DioClient {
         },
       ),
     );
-
-    // Log requests/responses only in dev builds.
-    if (AppConfig.isDev || kDebugMode) {
-      dio.interceptors.add(
-        LogInterceptor(
-          requestHeader: false,
-          requestBody: kDebugMode,
-          responseBody: kDebugMode,
-          error: true,
-          logPrint: (log) => debugPrint('[${AppConfig.environment}] $log'),
-        ),
-      );
-    }
 
     return dio;
   }

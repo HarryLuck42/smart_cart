@@ -4,8 +4,10 @@ import '../screens/scanner_screen.dart';
 import '../screens/menu_screen.dart';
 import '../screens/cart_screen.dart';
 import '../screens/order_tracking_screen.dart';
+import 'navigator_key.dart';
 
 final appRouter = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: '/',
   routes: [
     GoRoute(
