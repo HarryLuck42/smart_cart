@@ -14,23 +14,30 @@ class MenuScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(menuViewModelProvider(tableId));
 
-    return state.data.when(
-      loading: () => Scaffold(
+    // Show loading while either request is in-flight.
+    if (state.data.isLoading || state.categories.isLoading) {
+      return Scaffold(
         appBar: AppBar(title: Text('Table $tableId')),
         body: const _LoadingView(),
-      ),
-      error: (error, _) => Scaffold(
+      );
+    }
+
+    // Surface the first error encountered.
+    final error = state.data.error ?? state.categories.error;
+    if (error != null) {
+      return Scaffold(
         appBar: AppBar(title: const Text('Menu')),
         body: _ErrorView(
           error: error.toString(),
           onRetry: () =>
               ref.read(menuViewModelProvider(tableId).notifier).fetchMenu(),
         ),
-      ),
-      data: (menu) => Scaffold(
-        appBar: _MenuAppBar(restaurant: menu.restaurant),
-        body: _MenuView(tableId: tableId),
-      ),
+      );
+    }
+
+    return Scaffold(
+      appBar: _MenuAppBar(restaurant: state.data.asData!.value.restaurant),
+      body: _MenuView(tableId: tableId),
     );
   }
 }
@@ -63,19 +70,15 @@ class _MenuViewState extends ConsumerState<_MenuView> {
     final isSearching = state.searchQuery.isNotEmpty;
     final theme = Theme.of(context);
 
-    if (categories.isEmpty) {
-      return const _EmptyView(
-        icon: Icons.no_food,
-        message: 'No menu categories available',
-      );
-    }
+    // "All" tab is always first; category tabs follow.
+    final tabCount = categories.length + 1;
 
     return DefaultTabController(
-      key: ValueKey(categories.length),
-      length: categories.length,
+      key: ValueKey(tabCount),
+      length: tabCount,
       child: Column(
         children: [
-          // ── Search bar ──────────────────────────────────────────────────────
+          // ── Search bar ────────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
@@ -104,22 +107,24 @@ class _MenuViewState extends ConsumerState<_MenuView> {
             ),
           ),
 
-          // ── Category tabs (hidden while searching) ──────────────────────────
+          // ── Category tab bar (hidden while searching) ─────────────────────
           if (!isSearching) ...[
             TabBar(
               isScrollable: true,
               tabAlignment: TabAlignment.start,
-              tabs: categories
-                  .map((c) => Tab(
-                        text:
-                            '${c.name} (${state.itemsForCategory(c.id).length})',
-                      ))
-                  .toList(),
+              tabs: [
+                Tab(text: 'All (${state.allItems.length})'),
+                ...categories.map(
+                  (c) => Tab(
+                    text: '${c.name} (${state.itemsForCategory(c.id).length})',
+                  ),
+                ),
+              ],
             ),
             const Divider(height: 1),
           ],
 
-          // ── Content ─────────────────────────────────────────────────────────
+          // ── Content ───────────────────────────────────────────────────────
           Expanded(
             child: isSearching
                 ? _SearchResultsView(
@@ -128,11 +133,14 @@ class _MenuViewState extends ConsumerState<_MenuView> {
                     categoryNameOf: state.categoryName,
                   )
                 : TabBarView(
-                    children: categories
-                        .map((c) => _CategoryItemList(
-                              items: state.itemsForCategory(c.id),
-                            ))
-                        .toList(),
+                    children: [
+                      _CategoryItemList(items: state.allItems),
+                      ...categories.map(
+                        (c) => _CategoryItemList(
+                          items: state.itemsForCategory(c.id),
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ],

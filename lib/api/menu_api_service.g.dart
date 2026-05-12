@@ -12,7 +12,7 @@ part of 'menu_api_service.dart';
 
 class _MenuApiService implements MenuApiService {
   _MenuApiService(this._dio, {this.baseUrl, this.errorLogger}) {
-    baseUrl ??= 'https://private-cb316d-harrysubang.apiary-mock.com';
+    baseUrl ??= 'https://foodorderapi-production-1555.up.railway.app';
   }
 
   final Dio _dio;
@@ -20,6 +20,33 @@ class _MenuApiService implements MenuApiService {
   String? baseUrl;
 
   final ParseErrorLogger? errorLogger;
+
+  @override
+  Future<CategoriesResponse> getCategories() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<CategoriesResponse>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/v1/categories',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CategoriesResponse _value;
+    try {
+      _value = CategoriesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
 
   @override
   Future<MenuResponse> getMenu(String tableId) async {

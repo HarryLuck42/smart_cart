@@ -8,31 +8,38 @@ import '../../models/menu_response.dart';
 @immutable
 class MenuState {
   final AsyncValue<MenuResponse> data;
+  final AsyncValue<List<Category>> categories;
   final String searchQuery;
 
   const MenuState({
     this.data = const AsyncLoading(),
+    this.categories = const AsyncLoading(),
     this.searchQuery = '',
   });
 
   MenuState copyWith({
     AsyncValue<MenuResponse>? data,
+    AsyncValue<List<Category>>? categories,
     String? searchQuery,
   }) =>
       MenuState(
         data: data ?? this.data,
+        categories: categories ?? this.categories,
         searchQuery: searchQuery ?? this.searchQuery,
       );
 
+  // Categories from the dedicated API endpoint, sorted by sort_order.
   List<Category> get sortedCategories {
-    final menu = data.asData?.value;
-    if (menu == null) return [];
-    return List<Category>.from(menu.categories)
+    final cats = categories.asData?.value;
+    if (cats == null) return [];
+    return List<Category>.from(cats)
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
   }
 
   List<MenuItem> itemsForCategory(int categoryId) =>
       data.asData?.value.itemsByCategory(categoryId) ?? [];
+
+  List<MenuItem> get allItems => data.asData?.value.items ?? [];
 
   List<MenuItem> get searchResults {
     final menu = data.asData?.value;

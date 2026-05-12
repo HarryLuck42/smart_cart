@@ -5,11 +5,13 @@ part 'category.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Category {
   final int id;
+  final String? restaurantId;
   final String name;
   final int sortOrder;
 
   const Category({
     required this.id,
+    this.restaurantId,
     required this.name,
     required this.sortOrder,
   });

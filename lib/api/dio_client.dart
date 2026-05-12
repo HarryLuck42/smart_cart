@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 
 class DioClient {
   static const String baseUrl =
-      'https://private-cb316d-harrysubang.apiary-mock.com';
+      'https://foodorderapi-production-1555.up.railway.app';
 
   static Dio create() {
     final dio = Dio(
