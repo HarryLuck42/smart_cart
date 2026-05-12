@@ -1,15 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
+import '../config/app_config.dart';
 import 'api_exception.dart';
 
 class DioClient {
-  static const String baseUrl =
-      'https://foodorderapi-production-1555.up.railway.app';
-
   static Dio create() {
     final dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: AppConfig.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {
@@ -69,15 +67,18 @@ class DioClient {
       ),
     );
 
-    dio.interceptors.add(
-      LogInterceptor(
-        requestHeader: false,
-        requestBody: false,
-        responseBody: true,
-        error: true,
-        logPrint: (log) => debugPrint('[DioClient] $log'),
-      ),
-    );
+    // Log requests/responses only in dev builds.
+    if (AppConfig.isDev || kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(
+          requestHeader: false,
+          requestBody: kDebugMode,
+          responseBody: kDebugMode,
+          error: true,
+          logPrint: (log) => debugPrint('[${AppConfig.environment}] $log'),
+        ),
+      );
+    }
 
     return dio;
   }

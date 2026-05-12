@@ -1,0 +1,4 @@
+{
+  "ENVIRONMENT": "prod",
+  "BASE_URL": "https://foodorderapi-production-1555.up.railway.app"
+}

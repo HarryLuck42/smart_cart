@@ -4,6 +4,7 @@ import '../api/menu_api_service.dart';
 import '../api/menu_repository.dart';
 import '../api/order_api_service.dart';
 import '../api/order_repository.dart';
+import '../config/app_config.dart';
 import 'scanner/scanner_state.dart';
 import 'scanner/scanner_view_model.dart';
 import 'menu/menu_state.dart';
@@ -18,7 +19,7 @@ import 'order_tracking/order_tracking_view_model.dart';
 // ── Network ───────────────────────────────────────────────────────────────────
 
 final menuApiServiceProvider = Provider<MenuApiService>(
-  (_) => MenuApiService(DioClient.create()),
+  (_) => MenuApiService(DioClient.create(), baseUrl: AppConfig.baseUrl),
 );
 
 // ── Repository ────────────────────────────────────────────────────────────────
@@ -63,7 +64,7 @@ final cartSubtotalProvider = Provider<double>(
 // ── Order ─────────────────────────────────────────────────────────────────────
 
 final orderApiServiceProvider = Provider<OrderApiService>(
-  (_) => OrderApiService(DioClient.create()),
+  (_) => OrderApiService(DioClient.create(), baseUrl: AppConfig.baseUrl),
 );
 
 final orderRepositoryProvider = Provider<OrderRepository>(
