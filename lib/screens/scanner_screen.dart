@@ -18,7 +18,13 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = ref.read(scannerViewModelProvider.notifier).controller;
+    _controller = MobileScannerController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _onDetect(BarcodeCapture capture) {
@@ -90,6 +96,31 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
+            errorBuilder: (context, error) => ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.white54,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      error.errorCode == MobileScannerErrorCode.permissionDenied
+                          ? 'Camera permission denied.\n'
+                              'Go to Settings → Apps → cart_app\n'
+                              'to allow camera access.'
+                          : 'Camera is unavailable.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
           const _ScanOverlay(),
         ],
