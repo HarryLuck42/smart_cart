@@ -32,7 +32,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
     ref.listen<OrderState>(orderViewModelProvider, (_, next) {
       if (next.isSuccess) {
-        _showConfirmation(next.orderId!);
+        final orderId = next.orderId!;
+        ref.read(cartViewModelProvider.notifier).clear();
+        ref.read(orderViewModelProvider.notifier).reset();
+        context.push('/order/$orderId');
       } else if (next.isError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -122,55 +125,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  void _showConfirmation(String orderId) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        icon: const Icon(Icons.check_circle_rounded,
-            color: Colors.green, size: 56),
-        title: const Text('Order Placed!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Your order has been received.',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Order #$orderId',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              ref.read(orderViewModelProvider.notifier).reset();
-              ref.read(cartViewModelProvider.notifier).clear();
-              context.go('/');
-            },
-            child: const Text('Done'),
-          ),
-        ],
-      ),
-    );
-  }
+
 }
 
 // ── Cart item row ─────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import '../screens/home_screen.dart';
 import '../screens/scanner_screen.dart';
 import '../screens/menu_screen.dart';
 import '../screens/cart_screen.dart';
+import '../screens/order_tracking_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -25,6 +26,12 @@ final appRouter = GoRouter(
       path: '/cart',
       builder: (context, state) => CartScreen(
         tableId: state.uri.queryParameters['tableId'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: '/order/:orderId',
+      builder: (context, state) => OrderTrackingScreen(
+        orderId: state.pathParameters['orderId']!,
       ),
     ),
   ],

@@ -12,6 +12,8 @@ import 'cart/cart_state.dart';
 import 'cart/cart_view_model.dart';
 import 'order/order_state.dart';
 import 'order/order_view_model.dart';
+import 'order_tracking/order_tracking_state.dart';
+import 'order_tracking/order_tracking_view_model.dart';
 
 // ── Network ───────────────────────────────────────────────────────────────────
 
@@ -72,4 +74,13 @@ final orderRepositoryProvider = Provider<OrderRepository>(
 final orderViewModelProvider =
     StateNotifierProvider<OrderViewModel, OrderState>(
   (ref) => OrderViewModel(ref.read(orderRepositoryProvider)),
+);
+
+// ── Order tracking ────────────────────────────────────────────────────────────
+
+/// Auto-disposed when the tracking screen leaves the tree.
+final orderTrackingViewModelProvider = StateNotifierProvider.autoDispose
+    .family<OrderTrackingViewModel, OrderTrackingState, String>(
+  (ref, orderId) =>
+      OrderTrackingViewModel(ref.read(orderRepositoryProvider), orderId),
 );

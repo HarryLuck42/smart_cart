@@ -5,6 +5,7 @@ export 'customization_group.dart';
 export 'customization_option.dart';
 export 'menu_item.dart';
 export 'menu_response.dart';
+export 'order_detail.dart';
 export 'order_request.dart';
 export 'order_response.dart';
 export 'restaurant.dart';

@@ -1,4 +1,5 @@
 import '../models/cart_item.dart';
+import '../models/order_detail.dart';
 import '../models/order_request.dart';
 import 'order_api_service.dart';
 
@@ -35,5 +36,13 @@ class OrderRepository {
     }
 
     return '${response.data!.id}';
+  }
+
+  Future<OrderDetail> getOrder(String orderId) async {
+    final response = await _apiService.getOrder(orderId);
+    if (!response.success || response.data == null) {
+      throw Exception(response.message ?? 'Failed to fetch order');
+    }
+    return response.data!;
   }
 }
