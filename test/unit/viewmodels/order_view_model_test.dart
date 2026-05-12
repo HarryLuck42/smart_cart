@@ -1,14 +1,12 @@
 import 'package:cart_app/api/api_exception.dart';
 import 'package:cart_app/state/order/order_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
 import '../../helpers/fixtures.dart';
-import '../../helpers/mocks.dart';
+import '../../helpers/mocks.mocks.dart';
 
 void main() {
   late MockOrderRepository mockRepo;
-
-  setUpAll(setUpFallbacks);
 
   setUp(() => mockRepo = MockOrderRepository());
 
@@ -18,11 +16,11 @@ void main() {
     });
 
     test('submitOrder success sets orderId', () async {
-      when(() => mockRepo.submitOrder(
-            tableId: any(named: 'tableId'),
-            items: any(named: 'items'),
-            customerNote: any(named: 'customerNote'),
-          )).thenAnswer((_) async => '42');
+      when(mockRepo.submitOrder(
+        tableId: anyNamed('tableId'),
+        items: anyNamed('items'),
+        customerNote: anyNamed('customerNote'),
+      )).thenAnswer((_) async => '42');
 
       final vm = OrderViewModel(mockRepo);
       await vm.submitOrder(
@@ -36,11 +34,11 @@ void main() {
     });
 
     test('submitOrder failure sets errorMessage', () async {
-      when(() => mockRepo.submitOrder(
-            tableId: any(named: 'tableId'),
-            items: any(named: 'items'),
-            customerNote: any(named: 'customerNote'),
-          )).thenThrow(const ApiException(
+      when(mockRepo.submitOrder(
+        tableId: anyNamed('tableId'),
+        items: anyNamed('items'),
+        customerNote: anyNamed('customerNote'),
+      )).thenThrow(const ApiException(
         code: 'API_ERROR',
         message: 'Order submission failed.',
       ));
@@ -57,11 +55,11 @@ void main() {
     });
 
     test('reset returns state to idle after success', () async {
-      when(() => mockRepo.submitOrder(
-            tableId: any(named: 'tableId'),
-            items: any(named: 'items'),
-            customerNote: any(named: 'customerNote'),
-          )).thenAnswer((_) async => '42');
+      when(mockRepo.submitOrder(
+        tableId: anyNamed('tableId'),
+        items: anyNamed('items'),
+        customerNote: anyNamed('customerNote'),
+      )).thenAnswer((_) async => '42');
 
       final vm = OrderViewModel(mockRepo);
       await vm.submitOrder(tableId: 'T001', items: [], customerNote: '');
@@ -72,11 +70,11 @@ void main() {
 
     test('second submitOrder is ignored while first is in progress', () async {
       var callCount = 0;
-      when(() => mockRepo.submitOrder(
-            tableId: any(named: 'tableId'),
-            items: any(named: 'items'),
-            customerNote: any(named: 'customerNote'),
-          )).thenAnswer((_) async {
+      when(mockRepo.submitOrder(
+        tableId: anyNamed('tableId'),
+        items: anyNamed('items'),
+        customerNote: anyNamed('customerNote'),
+      )).thenAnswer((_) async {
         callCount++;
         await Future<void>.delayed(const Duration(milliseconds: 30));
         return '42';

@@ -1,9 +1,9 @@
 import 'package:cart_app/api/api_exception.dart';
 import 'package:cart_app/state/order_tracking/order_tracking_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
 import '../../helpers/fixtures.dart';
-import '../../helpers/mocks.dart';
+import '../../helpers/mocks.mocks.dart';
 
 void main() {
   late MockOrderRepository mockRepo;
@@ -12,7 +12,7 @@ void main() {
 
   group('OrderTrackingViewModel', () {
     test('initial state has isLoading true and no order', () {
-      when(() => mockRepo.getOrder(any()))
+      when(mockRepo.getOrder('1'))
           .thenAnswer((_) async => makeOrderDetail());
       final vm = OrderTrackingViewModel(mockRepo, '1');
       addTearDown(vm.dispose);
@@ -23,7 +23,7 @@ void main() {
 
     test('fetchOrder success sets order and clears loading', () async {
       final order = makeOrderDetail(id: 42, status: 'confirmed');
-      when(() => mockRepo.getOrder('42')).thenAnswer((_) async => order);
+      when(mockRepo.getOrder('42')).thenAnswer((_) async => order);
 
       final vm = OrderTrackingViewModel(mockRepo, '42');
       addTearDown(vm.dispose);
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('fetchOrder error sets error message and clears loading', () async {
-      when(() => mockRepo.getOrder('1')).thenThrow(const ApiException(
+      when(mockRepo.getOrder('1')).thenThrow(const ApiException(
         code: 'NO_INTERNET',
         message: 'No internet connection. Please check your network.',
       ));
@@ -50,13 +50,13 @@ void main() {
 
     test('fetchOrder error preserves previously loaded order', () async {
       final order = makeOrderDetail(status: 'preparing');
-      when(() => mockRepo.getOrder('1')).thenAnswer((_) async => order);
+      when(mockRepo.getOrder('1')).thenAnswer((_) async => order);
 
       final vm = OrderTrackingViewModel(mockRepo, '1');
       addTearDown(vm.dispose);
       await vm.fetchOrder(); // succeeds
 
-      when(() => mockRepo.getOrder('1'))
+      when(mockRepo.getOrder('1'))
           .thenThrow(const ApiException(code: 'NET', message: 'Network error'));
       await vm.fetchOrder(); // fails
 
@@ -66,13 +66,13 @@ void main() {
 
     test('background refresh does not show loading spinner', () async {
       final order = makeOrderDetail(status: 'confirmed');
-      when(() => mockRepo.getOrder('1')).thenAnswer((_) async => order);
+      when(mockRepo.getOrder('1')).thenAnswer((_) async => order);
 
       final vm = OrderTrackingViewModel(mockRepo, '1');
       addTearDown(vm.dispose);
       await vm.fetchOrder(); // first fetch — order is now loaded
 
-      when(() => mockRepo.getOrder('1'))
+      when(mockRepo.getOrder('1'))
           .thenAnswer((_) async => makeOrderDetail(status: 'preparing'));
       await vm.fetchOrder(); // background refresh
 
@@ -82,7 +82,7 @@ void main() {
 
     test('timer is cancelled when status reaches served', () async {
       final order = makeOrderDetail(status: 'served');
-      when(() => mockRepo.getOrder('1')).thenAnswer((_) async => order);
+      when(mockRepo.getOrder('1')).thenAnswer((_) async => order);
 
       final vm = OrderTrackingViewModel(mockRepo, '1');
       addTearDown(vm.dispose);

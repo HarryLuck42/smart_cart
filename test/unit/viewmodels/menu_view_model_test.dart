@@ -1,19 +1,17 @@
 import 'package:cart_app/state/menu/menu_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:mockito/mockito.dart';
 import '../../helpers/fixtures.dart';
-import '../../helpers/mocks.dart';
+import '../../helpers/mocks.mocks.dart';
 
 void main() {
   late MockMenuRepository mockRepo;
 
   setUp(() {
     mockRepo = MockMenuRepository();
-    when(() => mockRepo.getMenu(any()))
-        .thenAnswer((_) async => makeMenuResponse());
-    when(() => mockRepo.getCategories())
-        .thenAnswer((_) async => [kTestCategoryA]);
+    when(mockRepo.getMenu('T001')).thenAnswer((_) async => makeMenuResponse());
+    when(mockRepo.getCategories()).thenAnswer((_) async => [kTestCategoryA]);
   });
 
   group('MenuViewModel', () {
@@ -26,7 +24,7 @@ void main() {
     });
 
     test('fetchMenu sets data to AsyncError when menu fetch fails', () async {
-      when(() => mockRepo.getMenu(any())).thenThrow(Exception('Network error'));
+      when(mockRepo.getMenu('T001')).thenThrow(Exception('Network error'));
 
       final vm = MenuViewModel(mockRepo, 'T001');
       await vm.fetchMenu();
@@ -36,7 +34,7 @@ void main() {
 
     test('fetchMenu sets categories to AsyncError when categories fetch fails',
         () async {
-      when(() => mockRepo.getCategories()).thenThrow(Exception('Network error'));
+      when(mockRepo.getCategories()).thenThrow(Exception('Network error'));
 
       final vm = MenuViewModel(mockRepo, 'T001');
       await vm.fetchMenu();
