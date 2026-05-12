@@ -6,11 +6,22 @@ part of 'order_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-OrderData _$OrderDataFromJson(Map<String, dynamic> json) =>
-    OrderData(id: (json['id'] as num).toInt());
+OrderData _$OrderDataFromJson(Map<String, dynamic> json) => OrderData(
+  orderId: (json['order_id'] as num).toInt(),
+  tableId: json['table_id'] as String,
+  status: json['status'] as String,
+  totalPrice: (json['total_price'] as num).toDouble(),
+  customerNote: json['customer_note'] as String?,
+  createdAt: json['created_at'] as String,
+);
 
 Map<String, dynamic> _$OrderDataToJson(OrderData instance) => <String, dynamic>{
-  'id': instance.id,
+  'order_id': instance.orderId,
+  'table_id': instance.tableId,
+  'status': instance.status,
+  'total_price': instance.totalPrice,
+  'customer_note': instance.customerNote,
+  'created_at': instance.createdAt,
 };
 
 OrderResponse _$OrderResponseFromJson(Map<String, dynamic> json) =>

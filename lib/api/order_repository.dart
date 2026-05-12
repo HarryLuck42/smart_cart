@@ -37,7 +37,7 @@ class OrderRepository {
         throw const ApiException(
             code: 'API_ERROR', message: 'Order submission failed.');
       }
-      return '${response.data!.id}';
+      return '${response.data!.orderId}';
     } on ApiException {
       rethrow;
     } on DioException catch (e) {

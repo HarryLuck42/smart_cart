@@ -4,9 +4,21 @@ part 'order_response.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class OrderData {
-  final int id;
+  final int orderId;
+  final String tableId;
+  final String status;
+  final double totalPrice;
+  final String? customerNote;
+  final String createdAt;
 
-  const OrderData({required this.id});
+  const OrderData({
+    required this.orderId,
+    required this.tableId,
+    required this.status,
+    required this.totalPrice,
+    this.customerNote,
+    required this.createdAt,
+  });
 
   factory OrderData.fromJson(Map<String, dynamic> json) =>
       _$OrderDataFromJson(json);
